@@ -1,0 +1,87 @@
+.expense-list {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+.expense-card {
+  background: #fffb91;
+  width: 200px;
+  min-height: 140px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.15);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.expense-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 4px 8px 12px rgba(0, 0, 0, 0.3);
+}
+.expense-title {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.expense-amount {
+  color: #d9534f;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.expense-date {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.expense-category {
+  font-size: 12px;
+  background: #ffd966;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+
+  margin-bottom: 5px;
+}
+
+.expense-action {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.edit-btn,
+.delete-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #4caf50;
+  color: white;
+}
+.edit-btn:hover {
+  background-color: #45a049;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
