@@ -1,14 +1,29 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Expense } from "../types/Expense";
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDoc,
+  setDoc,
+  query,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../firebase/config";
 
 type ExpenseContextType = {
   expenses: Expense[];
-  addExpense: (expense: Omit<Expense, "id">) => void;
-  updateExpense: (id: string, updateExpense: Omit<Expense, "id">) => void;
-  deleteExpense: (id: string) => void;
+  addExpense: (expense: Omit<Expense, "id">) => Promise<void>;
+  updateExpense: (
+    id: string,
+    updateExpense: Omit<Expense, "id">
+  ) => Promise<void>;
+  deleteExpense: (id: string) => Promise<void>;
 
   income: number;
-  setIncome: (amount: number) => void;
+  setIncome: (amount: number) => Promise<void>;
   balance: number;
 };
 
@@ -18,25 +33,66 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [income, setIncome] = useState<number>(0);
-  const addExpense = (expenseData: Omit<Expense, "id">) => {
-    const newExpense: Expense = {
-      ...expenseData,
-      id: Date.now().toString(),
+  const [income, setIncomestate] = useState<number>(0);
+  const incomeDocId = "incomeDoc";
+
+  console.log(expenses);
+
+  //references//
+  const expenseCollection = collection(db, "expenses");
+  const incomeDocRef = doc(db, "meta", incomeDocId);
+  //fetching expenses
+  useEffect(() => {
+    const q = query(expenseCollection);
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const expenseData: Expense[] = [];
+      querySnapshot.forEach((doc) => {
+        expenseData.push({
+          id: doc.id,
+          ...(doc.data() as Omit<Expense, "id">),
+        });
+      });
+      setExpenses(expenseData);
+    });
+    return () => unsubscribe();
+  }, []);
+  console.log(incomeDocId);
+  //fetch income on mount (first render)
+  useEffect(() => {
+    const fetchIncome = async () => {
+      const docSnap = await getDoc(doc(db, "meta", incomeDocId));
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setIncome(data.amount);
+      }
     };
-    setExpenses((prev) => [...prev, newExpense]);
+    fetchIncome();
+  }, []);
+  console.log(income);
+  const addExpense = async (expenseData: Omit<Expense, "id">) => {
+    await addDoc(expenseCollection, expenseData);
+  };
+  const updateExpense = async (
+    id: string,
+    updatedExpense: Omit<Expense, "id">
+  ) => {
+    const expenseDocRef = doc(expenseCollection, id);
+    await updateDoc(expenseDocRef, updatedExpense);
+  };
+  const deleteExpense = async (id: string) => {
+    const expenseDocRef = doc(expenseCollection, id);
+    await deleteDoc(expenseDocRef);
   };
 
-  const updateExpense = (id: string, updateExpense: Omit<Expense, "id">) => {
-    setExpenses((prev) =>
-      prev.map((expense) =>
-        expense.id === id ? { ...updateExpense, id } : expense
-      )
-    );
-  };
-
-  const deleteExpense = (id: string) => {
-    setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+  const setIncome = async (amount: number) => {
+    console.log(amount);
+    const incomeDocRef = doc(db, "meta", incomeDocId);
+    await updateDoc(incomeDocRef, { amount }).catch(async () => {
+      // If doc doesnot exist we create it
+      await setDoc(incomeDocRef, { amount });
+    });
+    setIncomestate(amount);
   };
 
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);

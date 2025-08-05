@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useExpense } from "../../context/ExpenseContext";
-import "../ExpenseList/ExpenseList.css";
-const ExpenseList: React.FC = () => {
-  const { expenses } = useExpense();
 
+import "../ExpenseList/ExpenseList.css";
+import EditExpenseForm from "../EditExpenseForm/EditExpenseForm";
+const ExpenseList: React.FC = () => {
+  const { expenses, deleteExpense, updateExpense } = useExpense();
+  const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
   if (expenses.length === 0) {
     return <p>No Expense Added yet</p>;
   }
@@ -21,12 +23,25 @@ const ExpenseList: React.FC = () => {
           <div className="expense-action">
             <button
               className="edit-btn"
-              onClick={() => alert("edit coming son")}
+              onClick={() => setEditingExpenseId(id)}
             >
               Edit
             </button>
-            <button className="delete-btn">Delete</button>
+            <button
+              className="delete-btn"
+              onClick={() => {
+                if (id) deleteExpense(id);
+              }}
+            >
+              Delete
+            </button>
           </div>
+          {editingExpenseId === id && (
+            <EditExpenseForm
+              expense={{ id, title, amount, date, category }}
+              onClose={() => setEditingExpenseId(null)}
+            />
+          )}
         </div>
       ))}
     </div>

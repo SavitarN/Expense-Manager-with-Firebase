@@ -40,6 +40,7 @@ const ExpenseForm: React.FC = () => {
     setErrors(newErrors);
     return isValid;
   };
+  console.log(addExpense);
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
