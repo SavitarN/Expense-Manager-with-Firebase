@@ -14,6 +14,7 @@ const IncomeInput: React.FC = () => {
       setError("Please enter a valid income (greater than 0)");
       return;
     }
+    /^[1-9][0-9]*$/;
     const amount = Number(trimmed);
 
     setIncome(amount);

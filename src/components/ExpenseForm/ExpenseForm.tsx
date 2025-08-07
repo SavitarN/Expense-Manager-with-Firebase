@@ -89,13 +89,20 @@ const ExpenseForm: React.FC = () => {
         className="input-field"
       />
       {errors.date && <div className="error-message">{errors.date}</div>}
-      <input
-        type="text"
-        placeholder="category"
+
+      <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="input-field"
-      />
+        required
+      >
+        <option value="">Select Category</option>
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Utilities">Utilities</option>
+        <option value="Entertainment">Entertainment</option>
+      </select>
+
       {errors.category && (
         <div className="error-message">{errors.category}</div>
       )}

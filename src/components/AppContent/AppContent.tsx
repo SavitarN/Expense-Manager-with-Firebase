@@ -6,7 +6,14 @@ import "./AppContent.css";
 
 const AppContent: React.FC = () => {
   const { income, balance } = useExpense();
+  const { resetAll } = useExpense();
 
+  const handleReset = async () => {
+    const confrimReset = window.confirm("Are You Sure You Want to reset");
+    if (confrimReset) {
+      await resetAll();
+    }
+  };
   return (
     <>
       <h1>Expense Tracker</h1>
@@ -15,12 +22,18 @@ const AppContent: React.FC = () => {
       ) : (
         <>
           <div className="income-summary">
-            <p>
-              <strong>Income:</strong> Rs {income}
-            </p>
-            <p>
-              <strong>Balance:</strong> Rs {balance}
-            </p>
+            <div>
+              <p>
+                <strong>Income:</strong> Rs {income}
+              </p>
+              <p>
+                <strong>Balance:</strong> Rs {balance}
+              </p>
+            </div>
+
+            <button className="resetBtn" onClick={handleReset}>
+              Reset All{" "}
+            </button>
           </div>
           <div className="form">
             <ExpenseForm />

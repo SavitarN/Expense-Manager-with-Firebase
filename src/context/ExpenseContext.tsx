@@ -7,6 +7,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   setDoc,
   query,
   onSnapshot,
@@ -25,6 +26,7 @@ type ExpenseContextType = {
   income: number;
   setIncome: (amount: number) => Promise<void>;
   balance: number;
+  resetAll: () => Promise<void>;
 };
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
@@ -95,6 +97,15 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({
     setIncomestate(amount);
   };
 
+  const resetAll = async () => {
+    //reseting income to 0 user le click garda
+    await setIncome(0);
+
+    //and then delete expense
+    const querySnapshot = await getDocs(expenseCollection);
+    const deletePromise = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+    await Promise.all(deletePromise);
+  };
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
   const balance = income - totalExpenses;
   return (
@@ -107,6 +118,7 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({
         income,
         setIncome,
         balance,
+        resetAll,
       }}
     >
       {children}
